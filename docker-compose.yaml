@@ -13,7 +13,7 @@ services:
   balances:
     build: ./balances
     platform: linux/amd64
-    command: ["npm", "run", "start:dev"]
+    command: yarn start
     ports:
       - "3003:3000"
     volumes:
