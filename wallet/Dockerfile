@@ -1,7 +1,11 @@
-FROM golang:1.20
+FROM node:16.17.0-slim
 
-WORKDIR /app/
+USER node
 
-RUN apt-get update && apt-get install -y librdkafka-dev
+WORKDIR /app
 
-CMD ["tail", "-f", "/dev/null"]
+COPY . .
+
+RUN yarn install
+
+RUN yarn build

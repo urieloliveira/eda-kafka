@@ -4,11 +4,11 @@ services:
   wallet: 
     build: ./wallet
     platform: linux/amd64
-    command: ["go", "run", "cmd/walletcore/main.go"]
+    command: yarn start
     volumes:
       - ./wallet:/app
     ports:
-      - 8080:8080
+      - 3001:3000
 
   balances:
     build: ./balances
