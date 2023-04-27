@@ -1,0 +1,3 @@
+CREATE SCHEMA wallet;
+CREATE SCHEMA balances;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';

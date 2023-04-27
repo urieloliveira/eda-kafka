@@ -1,7 +1,7 @@
-FROM node:18-alpine
+FROM node:16.17.0-slim
 
-WORKDIR /app/
+USER node
 
-RUN npm install && npm run build
+WORKDIR /app
 
-CMD ["tail", "-f", "/dev/null"]
+CMD [ "sh", "-c", "npm install && tail -f /dev/null" ]
