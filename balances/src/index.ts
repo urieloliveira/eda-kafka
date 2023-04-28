@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import { MysqlAccountRepository } from './infra/repository/mysql-account.repository';
 import { GetAccountUseCase } from './app/use-case/get-account.use-case';
 import { UpdateAccountUseCase } from './app/use-case/update-account.use-case';
-import { KafkaAdapter } from './infra/queue/kafka-adapter.queue';
+import { RabbitMQAdapter } from './infra/queue/rabbit-mq-adapter.queue';
 
 type BalancesPayload = {
   account_id_from: string;
@@ -16,7 +16,7 @@ async function main() {
   const getAccountUseCase = new GetAccountUseCase(accountRepository);
   const updateAccountUseCase = new UpdateAccountUseCase(accountRepository);
 
-  const queue = new KafkaAdapter();
+  const queue = new RabbitMQAdapter();
   await queue.connect();
 
   queue.on('balances', async function (input: BalancesPayload) {

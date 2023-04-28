@@ -5,12 +5,12 @@ import { MysqlTransactionRepository } from './infra/repository/mysql-transaction
 import { CreateAccountUseCase } from './app/use-case/create-account.use-case';
 import { CreateClientUseCase } from './app/use-case/create-client.use-case';
 import { CreateTransactionUseCase } from './app/use-case/create-transaction.use-case';
-import { KafkaAdapter } from './infra/queue/kafka-adapter.queue';
+import { RabbitMQAdapter } from './infra/queue/rabbit-mq-adapter.queue';
 import { MysqlUnitOfWork } from './infra/uow/mysql.uow';
 import bodyParser from 'body-parser';
 
 async function main() {
-  const queue = new KafkaAdapter();
+  const queue = new RabbitMQAdapter();
   await queue.connect();
 
   const accountRepository = new MysqlAccountRepository();

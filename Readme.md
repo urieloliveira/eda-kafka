@@ -1,12 +1,11 @@
 # Event Driven Architecture
 
-Esse projeto tem como objetivo demonstrar a utilização de uma arquitetura orientada a eventos, utilizando o Kafka como broker de mensageria.
+Esse projeto tem como objetivo demonstrar a utilização de uma arquitetura orientada a eventos, utilizando o RabbitMQ como broker de mensageria.
 
 ## Tecnologias utilizadas
 
-- Go
 - NodeJS
-- Kafka
+- RabbitMQ
 
 ## Serviços
 
@@ -29,7 +28,11 @@ com as requisições necessárias para testar as APIs. Para utilizar, basta inst
 
 **OBS:** *Os bancos de dados serão populados automaticamente com alguns dados para facilitar os testes.*
 
-## Acessando o Kafka
+## Acessando o RabbitMQ
 
-Para acessar o `control-center` do Kafka, basta acessar o endereço `http://localhost:9021`.
-Nele, é possível visualizar os tópicos, grupos de consumidores, entre outras informações.
+Para acessar o `rabbitmq`, basta acessar o endereço `http://localhost:15672` e utilizar as credenciais abaixo:
+
+- **Usuário:** rabbitmq
+- **Senha:** rabbitmq
+
+Nele, é possível visualizar as filas, exchanges e mensagens que estão sendo enviadas.
