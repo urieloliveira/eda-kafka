@@ -8,36 +8,17 @@ export class MysqlTransactionRepository implements TransactionRepository {
   constructor() {
     this.#connection = MysqlConnection.getInstance();
   }
-  async findById(id: string): Promise<Transaction> {
-    const transactions = await this.#connection.query(
-      'SELECT * FROM transactions WHERE id = ?',
-      [id],
-    );
-    if (transactions.length === 0) {
-      throw new Error('Transaction not found');
-    }
-    return this.toEntity(transactions[0]);
-  }
-
-  async update(transaction: Transaction): Promise<void> {
-    // TODO: implement
-  }
 
   async create(transaction: Transaction): Promise<void> {
-    // TODO: implement
-  }
-
-  async delete(id: string): Promise<void> {
-    await this.#connection.query('DELETE FROM transactions WHERE id = ?', [id]);
-  }
-
-  private toEntity(row: any): Transaction {
-    return new Transaction({
-      id: row.id,
-      from_id: row.from_id,
-      to_id: row.to_id,
-      amount: row.amount,
-      created_at: row.created_at,
-    });
+    await this.#connection.query(
+      'INSERT INTO transactions (id, account_id_from, account_id_to, amount, created_at) VALUES (?, ?, ?, ?, ?)',
+      [
+        transaction.id,
+        transaction.account_from.id,
+        transaction.account_to.id,
+        transaction.amount,
+        transaction.created_at,
+      ],
+    );
   }
 }

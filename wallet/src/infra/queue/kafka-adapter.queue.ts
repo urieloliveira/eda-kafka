@@ -1,4 +1,4 @@
-import { Queue } from './queue.interface';
+import { MessageJson, Queue } from './queue.interface';
 import { Consumer, Kafka, Producer } from 'kafkajs';
 
 export class KafkaAdapter implements Queue {
@@ -16,20 +16,31 @@ export class KafkaAdapter implements Queue {
     await this.consumer.connect();
   }
 
-  async on(queueName: string, callback: Function): Promise<void> {
+  async on(queueName: string, callback: (input: any) => any): Promise<void> {
     await this.consumer.subscribe({ topic: queueName, fromBeginning: true });
     await this.consumer.run({
       eachMessage: async ({ message }) => {
-        const input = JSON.parse(message.value.toString());
+        const input = JSON.parse(message.value.toString()) as MessageJson;
         await callback(input.Payload);
       },
     });
   }
 
-  async publish(queueName: string, data: any): Promise<void> {
+  async publish(
+    queueName: string,
+    eventName: string,
+    payload: any,
+  ): Promise<void> {
     await this.producer.send({
       topic: queueName,
-      messages: [{ value: JSON.stringify(data) }],
+      messages: [
+        {
+          value: JSON.stringify({
+            Name: eventName,
+            Payload: payload,
+          }),
+        },
+      ],
     });
   }
 }

@@ -7,7 +7,11 @@ describe('MysqlAccountRepository', () => {
 
   beforeEach(async () => {
     accountRepository = new MysqlAccountRepository();
-    account = new Account({ id: 'test_id', balance: 1000 });
+    account = new Account({
+      id: 'test_id',
+      client_id: 'test_client',
+      balance: 1000,
+    });
     await accountRepository.create(account);
   });
 

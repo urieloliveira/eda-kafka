@@ -15,7 +15,9 @@ export class MysqlUnitOfWork implements UnitOfWork {
   }
 
   getRepository(name: string): any {
-    return this.#repositories.get(name);
+    const repo = this.#repositories.get(name);
+    if (!repo) return;
+    return repo;
   }
 
   async do(callback: () => Promise<void>): Promise<void> {

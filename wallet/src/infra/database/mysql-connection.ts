@@ -1,73 +1,63 @@
-import mysql from 'mysql2';
+import mysql from 'mysql2/promise';
 
 export class MysqlConnection {
   static instance: MysqlConnection;
   connection: mysql.Connection;
+  state: string;
+  config: mysql.ConnectionOptions;
 
-  constructor() {
-    this.connection = mysql.createConnection({
-      host: 'mysql',
-      port: 3306,
-      user: 'root',
-      password: 'root',
-      database: 'balances',
-    });
-    this.connection.connect((err) => {
-      if (err) {
-        console.error('error connecting: ' + err.stack);
-      }
-    });
+  constructor(config?: Partial<mysql.ConnectionOptions>) {
+    this.state = 'disconnected';
+    this.config = {
+      host: config?.host || 'mysql',
+      port: config?.port || 3306,
+      user: config?.user || 'root',
+      password: config?.password || 'root',
+      database: config?.database || 'wallet',
+    };
   }
 
-  static getInstance(): MysqlConnection {
+  async connect(): Promise<void> {
+    if (this.state === 'connected') {
+      return;
+    }
+    this.connection = await mysql.createConnection(this.config);
+    this.state = 'connected';
+  }
+
+  static getInstance(
+    config?: Partial<mysql.ConnectionOptions>,
+  ): MysqlConnection {
     if (!MysqlConnection.instance) {
-      MysqlConnection.instance = new MysqlConnection();
+      MysqlConnection.instance = new MysqlConnection(config);
     }
     return MysqlConnection.instance;
   }
 
-  query(statement: string, params?: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.connection.query(statement, params, (err, result) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(result);
-      });
-    });
+  async query(statement: string, params?: any): Promise<any> {
+    await this.connect();
+    try {
+      const response = await this.connection.query(statement, params);
+      return response[0];
+    } catch (error) {
+      throw error;
+    }
+  }
+  async beginTransaction(): Promise<void> {
+    await this.connect();
+    await this.connection.beginTransaction();
   }
 
-  beginTransaction(): Promise<void> {
-    return new Promise((_resolve, reject) => {
-      this.connection.beginTransaction((err) => {
-        if (err) {
-          console.error('error beginTransaction: ' + err.stack);
-          reject(err);
-        }
-      });
-    });
+  async commit(): Promise<void> {
+    await this.connection.commit();
   }
 
-  commit(): Promise<void> {
-    return new Promise((_resolve, reject) => {
-      this.connection.commit((err) => {
-        if (err) {
-          console.error('error commit: ' + err.stack);
-          reject(err);
-        }
-      });
-    });
-  }
-
-  rollback(): Promise<void> {
-    return new Promise((_resolve, reject) => {
-      this.connection.rollback((err) => {
-        if (err) {
-          console.error('error rollback: ' + err.stack);
-          reject(err);
-        }
-      });
-    });
+  async rollback(): Promise<void> {
+    try {
+      await this.connection.rollback();
+    } catch (error) {
+      throw error;
+    }
   }
 
   close(): void {

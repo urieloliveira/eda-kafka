@@ -17,8 +17,8 @@ export class CreateTransactionOutputMapper {
   static toOutput(transaction: Transaction): CreateTransactionOutput {
     return {
       id: transaction.id,
-      account_id_from: transaction.from_id,
-      account_id_to: transaction.to_id,
+      account_id_from: transaction.account_from.id,
+      account_id_to: transaction.account_to.id,
       amount: transaction.amount,
     };
   }
