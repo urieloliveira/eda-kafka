@@ -2,17 +2,17 @@ import mysql from 'mysql2';
 
 export class MysqlConnection {
   static instance: MysqlConnection;
-  mysql: mysql.Connection;
+  connection: mysql.Connection;
 
   constructor() {
-    this.mysql = mysql.createConnection({
+    this.connection = mysql.createConnection({
       host: 'mysql',
       port: 3306,
       user: 'root',
       password: 'root',
       database: 'balances',
     });
-    this.mysql.connect((err) => {
+    this.connection.connect((err) => {
       if (err) {
         console.error('error connecting: ' + err.stack);
       }
@@ -28,7 +28,7 @@ export class MysqlConnection {
 
   query(statement: string, params?: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.mysql.query(statement, params, (err, result) => {
+      this.connection.query(statement, params, (err, result) => {
         if (err) {
           reject(err);
         }
@@ -37,7 +37,40 @@ export class MysqlConnection {
     });
   }
 
+  beginTransaction(): Promise<void> {
+    return new Promise((_resolve, reject) => {
+      this.connection.beginTransaction((err) => {
+        if (err) {
+          console.error('error beginTransaction: ' + err.stack);
+          reject(err);
+        }
+      });
+    });
+  }
+
+  commit(): Promise<void> {
+    return new Promise((_resolve, reject) => {
+      this.connection.commit((err) => {
+        if (err) {
+          console.error('error commit: ' + err.stack);
+          reject(err);
+        }
+      });
+    });
+  }
+
+  rollback(): Promise<void> {
+    return new Promise((_resolve, reject) => {
+      this.connection.rollback((err) => {
+        if (err) {
+          console.error('error rollback: ' + err.stack);
+          reject(err);
+        }
+      });
+    });
+  }
+
   close(): void {
-    return this.mysql.destroy();
+    return this.connection.destroy();
   }
 }

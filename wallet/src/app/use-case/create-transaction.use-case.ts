@@ -5,11 +5,13 @@ import {
 } from '../dto/create-transaction.dto';
 import { Transaction } from '../../domain/entity/transaction.entity';
 import { TransactionRepository } from '../../domain/repository/transaction.repository';
+import { UnitOfWork } from 'infra/uow/uow.interface';
+import { MysqlUnitOfWork } from 'infra/uow/mysql.uow';
 
 export class CreateTransactionUseCase {
-  #transactionRepository: TransactionRepository;
-  constructor(transactionRepository: TransactionRepository) {
-    this.#transactionRepository = transactionRepository;
+  #uow: UnitOfWork;
+  constructor(uow: UnitOfWork) {
+    this.#uow = uow;
   }
   async execute(
     input: CreateTransactionInput,
@@ -19,7 +21,11 @@ export class CreateTransactionUseCase {
       to_id: input.account_id_to,
       amount: input.amount,
     });
-    await this.#transactionRepository.create(transaction);
+    await this.#uow.do(async () => {
+      const transactionRepository: TransactionRepository =
+        this.#uow.getRepository('transactionRepository');
+      await transactionRepository.create(transaction);
+    });
     return CreateTransactionOutputMapper.toOutput(transaction);
   }
 }

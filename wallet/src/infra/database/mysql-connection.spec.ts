@@ -5,7 +5,7 @@ describe('MysqlConnection', () => {
     const mysqlConnection = MysqlConnection.getInstance();
     expect(mysqlConnection).toBeInstanceOf(MysqlConnection);
     const res = await new Promise((resolve, reject) => {
-      mysqlConnection.mysql.connect((err) => {
+      mysqlConnection.connection.connect((err) => {
         if (err) {
           reject(err);
         }
